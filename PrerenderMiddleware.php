@@ -3,6 +3,8 @@ class PrerenderMiddleware extends \Slim\Middleware
 {
   protected $backendURL;
   protected $token;
+  protected $render = false;
+
   public function __construct($backendURL, $token)
   {
       $this->backendURL = $backendURL;
@@ -25,9 +27,17 @@ class PrerenderMiddleware extends \Slim\Middleware
       $agent = $req->getUserAgent();
       $bots = "!(Googlebot|bingbot|Googlebot-Mobile|Yahoo|YahooSeeker|FacebookExternalHit|Twitterbot|TweetmemeBot|BingPreview|developers.google.com/\+/web/snippet/)!i";
 
-      if(preg_match($bots, $agent)){
+      if (isset($_GET['_escaped_fragment_'])){
+        $init = $this->backendURL . $env['slim.url_scheme'] . '://' . $env['HTTP_HOST'] . '/?_escaped_fragment_=' . $_GET['_escaped_fragment_'];
+        $this->render = true;
+      } else if(preg_match($bots, $agent)){
         $resourceUri = $req->getResourceUri();
-        $ch = curl_init($this->backendURL . $env['slim.url_scheme'] . '://' . $env['HTTP_HOST'] . $resourceUri);
+        $init = $this->backendURL . $env['slim.url_scheme'] . '://' . $env['HTTP_HOST'] . $resourceUri;
+        $this->render = true;
+      }
+
+      if ($this->render){
+        $ch = curl_init($init);
         $xtoken = 'X-Prerender-Token: ' . $this->token;
         curl_setopt($ch, CURLOPT_HTTPHEADER, array($xtoken));
         curl_setopt($ch, CURLOPT_USERAGENT, $agent);
@@ -40,7 +50,7 @@ class PrerenderMiddleware extends \Slim\Middleware
         $app->response->setBody($prerender);
 
       } else { /* Not coming from a bot, render as usual */
-        $this->next->call();
+          $this->next->call();
       }
   }
 }
