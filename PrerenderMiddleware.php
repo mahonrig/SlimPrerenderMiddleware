@@ -31,7 +31,7 @@ class PrerenderMiddleware extends \Slim\Middleware
 
   public function isIgnoredExtension(){
     $resourceURI = $this->app->request->getResourceUri();
-    $extensions = "!(\.js|\.css|\.xml|\.less|\.png|\.jpg|\.jpeg|\.gif|\.pdf|\.doc|\.txt|\.ico|\.rss|\.zip|\.mp3|\.rar|\.exe|\.wmv|\.doc|\.avi|\.ppt|\.mpg|\.mpeg|\.tif|\.wav|\.mov|\.psd|\.ai|\.xls|\.mp4|\.m4a|\.swf|\.dat|\.dmg|\.iso|\.flv|\.m4v|\.torrent)!i";
+    $extensions = "!(\.js|\.css|\.xml|\.less|\.png|\.jpg|\.jpeg|\.gif|\.svg|\.pdf|\.doc|\.txt|\.ico|\.rss|\.zip|\.mp3|\.rar|\.exe|\.wmv|\.doc|\.avi|\.ppt|\.mpg|\.mpeg|\.tif|\.wav|\.mov|\.psd|\.ai|\.xls|\.mp4|\.m4a|\.swf|\.dat|\.dmg|\.iso|\.flv|\.m4v|\.torrent)!i";
     if (preg_match($extensions, $resourceURI)){
       return true;
     } else {
